@@ -3,6 +3,7 @@
 
 #include "Walnut/Image.h"
 #include "Walnut/Random.h"
+#include "Walnut/Timer.h"
 
 using namespace Walnut;
 
@@ -12,6 +13,7 @@ public:
 	virtual void OnUIRender() override
 	{
 		ImGui::Begin("Settings");
+		ImGui::Text("Last render: %.3fms", m_LastRenderTime);
 		if (ImGui::Button("Render"))
 		{
 			Render();
@@ -38,6 +40,7 @@ public:
 
 	void Render()
 	{
+		Timer timer;
 		// 图像为空或者图像与viewport尺寸不匹配
 		if (!m_Image || m_ViewportWidth != m_Image->GetWidth() || m_ViewportHeight != m_Image->GetHeight())
 		{
@@ -53,11 +56,13 @@ public:
 			}
 			m_Image->SetData(m_ImageData);
 		}
+		m_LastRenderTime = timer.ElapsedMillis();
 	}
 private:
 	std::shared_ptr<Image> m_Image;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
 	uint32_t* m_ImageData = nullptr;
+	float m_LastRenderTime;
 };
 
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
